@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"os/exec"
 
 	"github.com/kelseyhightower/envconfig"
@@ -47,9 +46,10 @@ func main() {
 				out, err := exec.Command(c.DeploymentScriptPath).Output()
 				if err != nil {
 					fmt.Println(err.Error())
-					os.Exit(1)
 				}
-				log.Println(string(out))
+				if out != nil {
+					log.Println(string(out))
+				}
 				log.Println("deployment webhook finished")
 			}
 		}
