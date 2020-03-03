@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/exec"
 
 	"github.com/kelseyhightower/envconfig"
 	"gopkg.in/go-playground/webhooks.v5/github"
@@ -11,9 +13,10 @@ import (
 
 // Config WEBHOOK_PORT, WEBHOOK_SECRET
 type Config struct {
-	Port             string `default:"3000"`
-	Secret           string `required:"true"`
-	DeploymentBranch string `required:"true" split_words:"true"`
+	Port                 string `default:"3000"`
+	Secret               string `required:"true"`
+	DeploymentBranch     string `required:"true" split_words:"true"`
+	DeploymentScriptPath string `required:"true" split_words:"true"`
 }
 
 const (
@@ -40,9 +43,15 @@ func main() {
 		case github.PushPayload:
 			push := payload.(github.PushPayload)
 			if push.Ref == "refs/heads/"+c.DeploymentBranch {
-				fmt.Printf("%+v\n", push)
+				log.Println("deployment webhook start:", c.DeploymentBranch)
+				out, err := exec.Command(c.DeploymentScriptPath).Output()
+				if err != nil {
+					fmt.Println(err.Error())
+					os.Exit(1)
+				}
+				log.Println(string(out))
+				log.Println("deployment webhook finished")
 			}
-			fmt.Println(push.BaseRef)
 		}
 	})
 
