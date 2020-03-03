@@ -1,2 +1,4 @@
+github.com/kelseyhightower/envconfig v1.4.0 h1:Im6hONhd3pLkfDFsbRgu68RDNkGF1r3dvMUtDTo2cv8=
+github.com/kelseyhightower/envconfig v1.4.0/go.mod h1:cccZRl6mQpaq41TPp5QxidR+Sa3axMbJDNb//FQX6Gg=
 gopkg.in/go-playground/webhooks.v5 v5.13.0 h1:e9vtkQZK464+UdL3YjRox2yR8JSmh2094PUBMvdriFs=
 gopkg.in/go-playground/webhooks.v5 v5.13.0/go.mod h1:LZbya/qLVdbqDR1aKrGuWV6qbia2zCYSR5dpom2SInQ=

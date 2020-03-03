@@ -2,18 +2,32 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
-	"os"
 
+	"github.com/kelseyhightower/envconfig"
 	"gopkg.in/go-playground/webhooks.v5/github"
 )
+
+// Config WEBHOOK_PORT, WEBHOOK_SECRET
+type Config struct {
+	Port             string `default:"3000"`
+	Secret           string `required:"true"`
+	DeploymentBranch string `required:"true" split_words:"true"`
+}
 
 const (
 	path = "/webhooks"
 )
 
 func main() {
-	hook, _ := github.New(github.Options.Secret(os.Getenv("WEBHOOK_SECRET")))
+	var c Config
+	err := envconfig.Process("webhook", &c)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	hook, _ := github.New(github.Options.Secret(c.Secret))
 
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		payload, err := hook.Parse(r, github.PushEvent)
@@ -25,11 +39,14 @@ func main() {
 		switch payload.(type) {
 		case github.PushPayload:
 			push := payload.(github.PushPayload)
-			// Do whatever you want from here...
-			fmt.Printf("%+v", push)
-			fmt.Print(push.Ref)
-			fmt.Print(push.BaseRef)
+			if push.Ref == "refs/heads/"+c.DeploymentBranch {
+				fmt.Printf("%+v\n", push)
+			}
+			fmt.Println(push.BaseRef)
 		}
 	})
-	http.ListenAndServe(":3000", nil)
+
+	addr := ":" + c.Port
+	log.Println("listen on", addr)
+	http.ListenAndServe(addr, nil)
 }
