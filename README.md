@@ -29,3 +29,21 @@ echo 'deploy'
 
 2020/03/03 23:10:28 deployment webhook finished
 ```
+
+## public url setting
+
+any one of them
+
+- DNS setting
+- tunnel service
+  - [ngrok](https://ngrok.com/)
+  - [inlets](https://github.com/inlets/inlets)
+
+## Github Webhook Setting
+
+- Payload URL: https://{your-url}/webhooks
+- Content type: application/json
+- Secret: value of WEBHOOK_SECRET
+- trigger: Just the push event
+
+![github](https://user-images.githubusercontent.com/1042519/77043545-13ec8280-6a01-11ea-91a7-32239fe007e6.jpg)
