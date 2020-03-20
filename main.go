@@ -22,6 +22,18 @@ const (
 	path = "/webhooks"
 )
 
+func deploy(c Config) {
+	log.Println("deployment webhook start:", c.DeploymentBranch)
+	out, err := exec.Command(c.DeploymentScriptPath).Output()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	if out != nil {
+		log.Println(string(out))
+	}
+	log.Println("deployment webhook finished")
+}
+
 func main() {
 	var c Config
 	err := envconfig.Process("webhook", &c)
@@ -42,15 +54,7 @@ func main() {
 		case github.PushPayload:
 			push := payload.(github.PushPayload)
 			if push.Ref == "refs/heads/"+c.DeploymentBranch {
-				log.Println("deployment webhook start:", c.DeploymentBranch)
-				out, err := exec.Command(c.DeploymentScriptPath).Output()
-				if err != nil {
-					fmt.Println(err.Error())
-				}
-				if out != nil {
-					log.Println(string(out))
-				}
-				log.Println("deployment webhook finished")
+				go deploy(c)
 			}
 		}
 	})
